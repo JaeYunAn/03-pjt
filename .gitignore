@@ -1,0 +1,20 @@
+# 운영체제
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 에디터
+.vscode/
+.idea/
+
+# 비밀 정보와 가상환경 (수업 실습 코드 등)
+.env
+venv/
+.venv/
+__pycache__/
+
+# 패키지
+node_modules/
+
+# 압축 파일
+*.zip

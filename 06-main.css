@@ -1,0 +1,886 @@
+/* =========================================================
+   ThRead 메인 페이지 (06-main) - 2차 수정본
+   공통 스타일은 common.css, 여기는 메인 페이지 섹션만
+   - 필수: F301 ~ F308 / 심화: F309 오버랩, F310 CSS Grid 장르
+   ========================================================= */
+
+:root {
+  --overlap: 170px; /* F309: 베스트셀러 카드가 Hero 위로 올라오는 높이 */
+  --drop: 80px; /* Hero에서 카드로 내려오는 실의 길이 */
+}
+
+/* =========================================================
+   F302 Hero
+   ========================================================= */
+.hero-section {
+  position: relative;
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  padding: 128px 0 calc(var(--overlap) + var(--drop) + 40px);
+  color: #fff;
+}
+.hero-section .hero-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(
+    180deg,
+    rgba(25, 31, 40, 0.62) 0%,
+    rgba(25, 31, 40, 0.5) 45%,
+    rgba(25, 31, 40, 0.86) 100%
+  );
+}
+.hero-content {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: end;
+  gap: 48px;
+  width: 80%;
+  margin: 0 auto;
+  padding-inline: var(--card-pad); /* 베스트셀러 카드 안쪽 글자와 같은 선 */
+}
+@media (min-width: 992px) {
+  .hero-content {
+    grid-template-columns: minmax(0, 1fr) 380px;
+  }
+}
+
+/* 이번 주의 책 (넷플릭스 Billboard) */
+.hero-pick {
+  align-items: flex-end;
+  gap: 20px;
+  padding: 20px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(18, 22, 29, 0.55);
+  backdrop-filter: blur(10px);
+}
+.hero-pick-cover {
+  --w: 112px;
+  --h: 165px;
+  flex-shrink: 0;
+}
+.hero-pick-body {
+  min-width: 0;
+}
+.hero-pick-label {
+  margin: 0 0 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.7);
+}
+.hero-pick-title {
+  margin: 0 0 2px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.5rem;
+  line-height: 1.3;
+  color: #fff;
+}
+.hero-pick-author {
+  margin: 0 0 10px;
+  font-size: 0.8125rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+.hero-pick-desc {
+  margin: 0 0 12px;
+  font-family: var(--font-read);
+  font-size: 0.875rem;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.86);
+}
+.hero-pick-link {
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-underline-offset: 4px;
+}
+.hero-pick-link:hover {
+  color: #fff;
+  text-decoration-thickness: 2px;
+}
+/* Apple: 한 섹션에 메시지 하나, 크게 */
+.hero-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2rem, 0.8rem + 2.4vw, 3.75rem);
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  margin: 0 0 20px;
+}
+.hero-title .hero-line {
+  display: inline-block;
+  text-wrap: balance;
+}
+.hero-subtitle {
+  font-family: "GmarketSansTTFMedium", sans-serif;
+  font-size: 1.75rem;
+  line-height: 1;
+  margin-bottom: 16px;
+}
+.hero-subtitle .th {
+  color: #fff;
+}
+.hero-subtitle .read {
+  color: #fe4a51;
+}
+.hero-desc {
+  font-size: 1.125rem;
+  color: rgba(255, 255, 255, 0.82);
+  margin: 0 0 32px;
+}
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 24px;
+}
+.hero-link {
+  color: #fff;
+  font-weight: 600;
+  text-underline-offset: 6px;
+}
+.hero-link:hover {
+  color: #fff;
+  text-decoration-thickness: 2px;
+}
+
+/* =========================================================
+   F303 Bestseller + F309 Hero 위에 반만 걸치기
+   ========================================================= */
+.bestseller {
+  position: relative;
+  z-index: 5;
+  margin-top: calc(-1 * var(--overlap));
+}
+.bestseller-card {
+  position: relative;
+  width: 80%;
+  margin: 0 auto;
+  padding: var(--card-pad);
+  background: var(--paper);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 1px 2px rgba(25, 31, 40, 0.06), 0 12px 32px -8px rgba(25, 31, 40, 0.18),
+    0 40px 80px -24px rgba(25, 31, 40, 0.24);
+}
+
+/* 이 페이지에서 가장 눈에 띄는 한 가지: Hero에서 내려와 섹션 제목을 가리키는 붉은 실 */
+.thread-drop {
+  position: absolute;
+  left: var(--card-pad);
+  top: calc(-1 * var(--drop));
+  width: 2px;
+  height: calc(var(--drop) + var(--card-pad) - 14px);
+  background: var(--thread);
+  border-radius: 2px;
+  transform-origin: top center;
+  animation: thread-draw 1.1s cubic-bezier(0.65, 0, 0.35, 1) 0.5s both;
+}
+.thread-drop::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -4px;
+  width: 9px;
+  height: 9px;
+  margin-left: -4.5px;
+  border-radius: 50%;
+  background: var(--thread);
+  box-shadow: 0 0 0 3px var(--paper);
+  animation: knot-in 0.3s ease-out 1.5s both;
+}
+@keyframes thread-draw {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+@keyframes knot-in {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 1200px 이상: 왼쪽 제목(220px) + 오른쪽 Carousel */
+.bestseller-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+}
+@media (min-width: 1200px) {
+  .bestseller-layout {
+    grid-template-columns: 220px minmax(0, 1fr);
+    column-gap: 32px;
+    align-items: start; /* 붉은 실이 끝나는 곳에 제목 */
+  }
+}
+.bestseller-head .section-title {
+  margin-top: 6px;
+}
+/* 상세 화면에서 돌아왔을 때는 실 애니메이션을 다시 보여 주지 않음 */
+.intro-seen .thread-drop,
+.intro-seen .thread-drop::after {
+  animation: none;
+}
+.bestseller-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 14px 0 0;
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+.slide-count {
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+.slide-count b {
+  color: var(--ink);
+}
+.btn-pause {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  margin-top: 20px;
+  padding: 6px 14px 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink-2);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.btn-pause:hover {
+  background: var(--surface);
+}
+
+/* 명세 F303: 한 슬라이드에 4권. 줄 모양은 Carousel 자체 폭(container query)으로 결정
+   - 기본: 4권 한 줄
+   - 좁을 때: 2 x 2
+   - 아주 넓을 때(27인치 등): 표지 옆에 저자와 평점을 펼쳐 빈 공간을 채움 */
+.bestseller-list {
+  container-type: inline-size;
+  min-width: 0;
+}
+.book-row {
+  display: grid;
+  grid-template-columns: repeat(4, 150px);
+  justify-content: center;
+  column-gap: clamp(16px, calc((100% - 660px) / 3), 48px);
+  row-gap: 28px;
+  list-style: none;
+  margin: 0;
+  padding: 8px 0 12px;
+}
+.book-author,
+.book-rating {
+  display: none;
+}
+@container (max-width: 707px) {
+  .book-row {
+    grid-template-columns: repeat(2, 150px);
+    column-gap: 16px;
+  }
+}
+@container (min-width: 1150px) {
+  .book-row {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    justify-content: stretch;
+    column-gap: 28px;
+    padding-right: 56px; /* 오른쪽 Next 버튼 자리 */
+  }
+  .book-row .book-link {
+    display: grid;
+    grid-template-columns: 150px minmax(0, 1fr);
+    column-gap: 18px;
+    align-items: end;
+    width: auto;
+  }
+  .book-row .book-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    margin: 0 0 6px;
+  }
+  .book-row .book-rank {
+    font-size: 2.5rem;
+  }
+  .book-row .book-title {
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+  .book-author {
+    display: block;
+    font-size: 0.8125rem;
+    color: var(--muted);
+  }
+  .book-rating {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--ink-2);
+  }
+  .book-rating .bi {
+    color: var(--star);
+  }
+}
+/* 명세: 베스트셀러 이미지는 높이 220px, 너비 150px 고정 */
+.bestseller .book-cover img {
+  width: 150px;
+  height: 220px;
+}
+
+/* 네이버 시리즈 랭킹처럼: 순위 + 순위 변동 */
+.book-meta {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 8px;
+  align-items: baseline;
+  margin-top: 14px;
+}
+.book-rank {
+  grid-row: span 2;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.25rem;
+  color: var(--ink);
+  line-height: 1;
+}
+.book-title {
+  font-size: 0.875rem;
+  color: var(--ink);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.rank-change {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.rank-change.up {
+  color: var(--thread-ink);
+}
+.rank-change.down {
+  color: var(--down);
+}
+.rank-change.new {
+  color: var(--ink);
+  letter-spacing: 0.02em;
+}
+
+/* 명세: 우측 Next 버튼만 */
+.bestseller .carousel-control-next {
+  top: 94px; /* 표지 세로 가운데 */
+  bottom: auto;
+  right: -22px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--ink);
+  opacity: 1;
+  box-shadow: 0 6px 16px -4px rgba(25, 31, 40, 0.4);
+}
+.bestseller .carousel-control-next:hover {
+  background: #333d4b;
+}
+.bestseller .carousel-control-next-icon {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+/* =========================================================
+   F304 AI Recommendation
+   ========================================================= */
+.ai-recommendation {
+  width: 80%;
+  margin: 0 auto;
+}
+.book-fan {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px 0;
+}
+.book-fan .fan-side {
+  --w: 132px;
+  --h: 194px;
+  z-index: 1;
+}
+.book-fan .fan-side:first-child {
+  transform: rotate(-6deg) translateX(28px);
+}
+.book-fan .fan-side:last-child {
+  transform: rotate(6deg) translateX(-28px);
+}
+.book-fan .fan-center {
+  --w: 164px;
+  --h: 240px;
+  z-index: 2;
+}
+.reason-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  margin: 24px auto 0;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink-2);
+  font-size: 0.875rem;
+}
+.reason-chip .bi {
+  color: var(--ink-2);
+}
+.ai-statement {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.625rem, 1.1rem + 1.7vw, 2.5rem);
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  margin: 16px 0 20px;
+}
+.ai-desc {
+  font-size: 1.0625rem;
+  line-height: 1.75;
+  margin-bottom: 28px;
+}
+/* 명세: "활동 데이터 기반" 강조 */
+.ai-highlight {
+  color: #fe4a51;
+  font-family: "SBAggroOTF_L", sans-serif;
+  font-size: 1.3rem;
+}
+
+/* =========================================================
+   F305 Genre List (기본 보기: Flexbox 4열)
+   F310 모자이크 보기 (CSS Grid) - "모자이크" 버튼을 고르면 :has()로 전환
+   ========================================================= */
+.genre-books.page-section {
+  padding-top: clamp(40px, 5vw, 72px);
+}
+.section-head-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px 24px;
+}
+
+/* 보기 전환 버튼 (라디오 + label) */
+.view-toggle {
+  display: inline-flex;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+.view-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 6px 14px;
+  border-radius: 9px;
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+}
+.btn-check:checked + .view-toggle-btn {
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 1px 3px rgba(25, 31, 40, 0.14);
+}
+.btn-check:focus-visible + .view-toggle-btn {
+  outline: 3px solid var(--thread);
+  outline-offset: 2px;
+}
+
+/* ---------- 기본 보기: F305 Flexbox ---------- */
+.genre-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.genre-item {
+  position: relative;
+  display: block;
+  flex: 0 0 calc((100% - 60px) / 4); /* 4열 */
+  height: 240px; /* 고정 크기 */
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  isolation: isolate;
+  text-decoration: none;
+}
+.genre-item img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 부모 크기에 맞게 채움 */
+  filter: grayscale(0.9) contrast(1.05); /* 제각각인 사진 톤을 하나로 */
+  transition: filter 0.4s ease, transform 0.6s ease;
+}
+.genre-item::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(180deg, transparent 45%, rgba(25, 31, 40, 0.72));
+}
+/* 장르마다 고유 색을 얇게 입혀 한눈에 구분 (흑백 사진 위에 color 블렌드) */
+.genre-item::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: var(--tint, transparent);
+  mix-blend-mode: color;
+  opacity: 0.72;
+  transition: opacity 0.4s ease;
+}
+.genre-item:hover img,
+.genre-item:focus-visible img {
+  filter: none; /* 원래 색이 드러남 */
+  transform: scale(1.04);
+}
+.genre-item:hover::before,
+.genre-item:focus-visible::before {
+  opacity: 0;
+}
+.genre-romance { --tint: #c4687c; }
+.genre-travel { --tint: #4a7f90; }
+.genre-philosophy { --tint: #6f6a96; }
+.genre-art { --tint: #b8664c; }
+.genre-health { --tint: #5a9b6a; }
+.genre-history { --tint: #8c6b48; }
+.genre-economy { --tint: #3f6ea9; }
+.genre-science { --tint: #4b7f79; }
+.genre-youth { --tint: #cf8f3a; }
+.genre-baby { --tint: #d9a14f; }
+.genre-name {
+  position: absolute; /* 좌측 하단 오버레이 */
+  left: 18px;
+  bottom: 14px;
+  z-index: 2;
+  color: #fff;
+  font-family: var(--font-display-m);
+  font-weight: 600;
+  font-size: 1.125rem;
+}
+.genre-count {
+  display: block;
+  margin-top: 2px;
+  font-family: var(--font-ui);
+  font-weight: 400;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+/* 4열에서 마지막 줄을 채우는 2칸짜리 안내 타일 */
+.genre-cta {
+  flex: 0 0 calc(50% - 10px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 24px;
+  min-height: 240px;
+  padding: 24px 32px;
+  border-radius: var(--radius-md);
+  background: var(--ink);
+  color: #fff;
+}
+.genre-cta-title {
+  font-family: var(--font-display-m);
+  font-weight: 600;
+  font-size: 1.25rem;
+  margin: 0 0 6px;
+}
+.genre-cta-desc {
+  color: rgba(255, 255, 255, 0.72);
+  margin: 0;
+}
+.genre-cta .btn {
+  flex-shrink: 0;
+}
+
+/* ---------- 모자이크 보기: F310 CSS Grid ---------- */
+.genre-books:has(#genreViewMosaic:checked) .genre-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: 170px;
+  gap: 16px;
+  /* 세로 사진은 세로로 긴 칸, 가로 사진은 가로로 긴 칸에 */
+  grid-template-areas:
+    "rom tra tra phi"
+    "rom art hea phi"
+    "his art eco sci"
+    "his you you sci"
+    "bab cta cta cta";
+}
+.genre-books:has(#genreViewMosaic:checked) .genre-item {
+  height: auto; /* 칸 크기를 그대로 채움 */
+}
+.genre-books:has(#genreViewMosaic:checked) .genre-cta {
+  min-height: 0;
+}
+.genre-romance { grid-area: rom; }
+.genre-travel { grid-area: tra; }
+.genre-philosophy { grid-area: phi; }
+.genre-art { grid-area: art; }
+.genre-health { grid-area: hea; }
+.genre-history { grid-area: his; }
+.genre-economy { grid-area: eco; }
+.genre-science { grid-area: sci; }
+.genre-youth { grid-area: you; }
+.genre-baby { grid-area: bab; }
+.genre-cta { grid-area: cta; }
+
+/* =========================================================
+   F306 Popular Thread (Card + Pagination)
+   ========================================================= */
+.thread {
+  background: var(--surface);
+}
+.popular-thread {
+  width: 80%;
+}
+.thread-card.card {
+  --bs-card-bg: transparent;
+  border: 0;
+}
+.thread-thumb {
+  position: relative;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.thread-card .card-img-top {
+  height: 200px; /* 명세: 카드 이미지 높이 고정 */
+  object-fit: cover;
+  border-radius: 0;
+}
+.btn-save {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--ink);
+  font-size: 1.05rem;
+  box-shadow: 0 2px 8px rgba(25, 31, 40, 0.18);
+  transition: transform 0.15s;
+}
+.btn-save:active {
+  transform: scale(0.92);
+}
+.btn-save[aria-pressed="true"] {
+  color: var(--ink);
+}
+.thread-card .card-body {
+  padding: 18px 4px 14px;
+}
+.thread-card .card-title {
+  font-family: var(--font-display-m);
+  font-weight: 700;
+  font-size: 1.125rem;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  margin-bottom: 10px;
+}
+/* 읽는 글은 명조로: UI 글꼴과 읽기 글꼴을 나눔 */
+.thread-card .card-text {
+  font-family: var(--font-read);
+  font-size: 0.9375rem;
+  line-height: 1.85;
+  color: var(--ink-2);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.thread-card .card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 0 4px 4px;
+  background: transparent;
+  border: 0;
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+.thread-by {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.thread-book {
+  color: #fe4a51; /* 명세 지정 색 */
+  font-weight: 700;
+  text-decoration: none;
+}
+.thread-book:hover {
+  color: #fe4a51;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.thread-like {
+  flex-shrink: 0;
+}
+.thread-like .bi {
+  color: var(--thread);
+}
+/* 명세 F306 Pagination: .thread .thread-pagination .page-item .page-link (common.css) */
+.thread .thread-pagination {
+  margin-top: 56px;
+}
+
+/* =========================================================
+   반응형
+   ========================================================= */
+/* 1200px 미만: 베스트셀러 제목을 위로, 멈춤 버튼은 오른쪽 */
+@media (max-width: 1199.98px) {
+  :root {
+    --overlap: 150px;
+  }
+  .bestseller-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px 16px;
+  }
+  .btn-pause {
+    margin-top: 0;
+  }
+}
+
+/* 992px 미만 */
+@media (max-width: 991.98px) {
+  .bestseller .carousel-control-next {
+    right: -10px;
+  }
+  .genre-books:has(#genreViewMosaic:checked) .genre-grid {
+    grid-auto-rows: 150px;
+    gap: 12px;
+  }
+  .genre-name {
+    font-size: 1rem;
+    left: 14px;
+  }
+  .genre-cta {
+    padding: 20px 24px;
+  }
+}
+
+/* 576px 미만: 모바일 */
+@media (max-width: 575.98px) {
+  :root {
+    --overlap: 96px;
+    --drop: 56px;
+  }
+  .hero-content {
+    width: calc(100% - 24px);
+  }
+  .hero-subtitle {
+    font-size: 1.5rem;
+  }
+  .hero-desc {
+    font-size: 1rem;
+  }
+  .bestseller-card {
+    width: calc(100% - 24px);
+    border-radius: 24px;
+    padding-top: 28px;
+  }
+  .book-fan .fan-side {
+    --w: 96px;
+    --h: 141px;
+  }
+  .book-fan .fan-side:first-child {
+    transform: rotate(-6deg) translateX(20px);
+  }
+  .book-fan .fan-side:last-child {
+    transform: rotate(6deg) translateX(-20px);
+  }
+  .book-fan .fan-center {
+    --w: 120px;
+    --h: 176px;
+  }
+
+  /* 장르 기본 보기: 명세대로 폭 100%, 1열 */
+  .genre-grid {
+    gap: 12px;
+  }
+  .genre-item {
+    flex-basis: 100%;
+    width: 100%;
+    height: 180px;
+  }
+  .genre-cta {
+    flex-basis: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    min-height: 0;
+    padding: 22px;
+  }
+  /* 장르 모자이크 보기: 2열로 바꿔 세로 스크롤을 절반으로 */
+  .genre-books:has(#genreViewMosaic:checked) .genre-grid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: repeat(9, 128px) auto;
+    gap: 10px;
+    grid-template-areas:
+      "tra tra"
+      "rom art"
+      "rom art"
+      "hea phi"
+      "his phi"
+      "his eco"
+      "you you"
+      "sci bab"
+      "sci bab"
+      "cta cta";
+  }
+
+  .thread .thread-pagination {
+    margin-top: 40px;
+  }
+}

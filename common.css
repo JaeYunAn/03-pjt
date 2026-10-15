@@ -1,0 +1,551 @@
+/* =========================================================
+   ThRead 공통 디자인 시스템 (모든 페이지가 함께 씀)
+   - 폰트, 색, 버튼, Navbar, 책 표지, 페이지네이션, Footer,
+     모바일 하단 탭 바, 로그아웃 Modal, 토스트
+   - 모티프: 붉은 실 = "지금 여기"를 가리키는 표시
+     (활성 탭, 현재 페이지 번호, 읽기 진행도)
+   ========================================================= */
+
+/* ---------- 폰트 정의 ----------
+   스켈레톤의 format("ttf")는 브라우저가 인식하지 못하는 값이라 폰트가 무시됨 → "truetype"으로 수정
+   스켈레톤마다 다르던 이름(SBAggro_L / SBAggroOTF_L)은 둘 다 같은 파일을 가리키도록 맞춤 */
+@font-face {
+  font-family: "GmarketSansTTFMedium";
+  src: url("assets/fonts/GmarketSansTTFMedium.ttf") format("truetype");
+  font-display: swap;
+}
+@font-face {
+  font-family: "SBAggro_L";
+  src: url("assets/fonts/SBAggroOTF_L.ttf") format("truetype");
+  font-display: swap;
+}
+@font-face {
+  font-family: "SBAggroOTF_L";
+  src: url("assets/fonts/SBAggroOTF_L.ttf") format("truetype");
+  font-display: swap;
+}
+
+/* ---------- 디자인 토큰 ---------- */
+:root {
+  /* 색 */
+  --ink: #191f28; /* 제목 */
+  --ink-2: #4e5968; /* 본문 */
+  --muted: #6b7684; /* 보조 텍스트 (흰 배경 대비 4.5:1 이상) */
+  --line: #e5e8eb;
+  --surface: #f2f4f6;
+  --paper: #ffffff;
+  --thread: #fe4a51; /* 브랜드 색 (명세 지정) */
+  --thread-ink: #d7373f; /* 흰 글자를 올리는 버튼 배경용 진한 빨강 (대비 4.5:1) */
+  --down: #3a6fd8; /* 순위 하락 (국내 관례: 상승 빨강, 하락 파랑) */
+  --star: #f5a524; /* 별점 */
+  /* 빨강(#fe4a51)은 아껴 씀: 명세 지정 위치, 주 버튼, 붉은 실, 공감 하트, 순위 상승에만 */
+  --night: #12161d; /* 상세 페이지 Hero 왼쪽 */
+
+  /* 서체
+     - 제목과 읽는 글: Hahmlet(함렛) - 책과 문학 느낌의 한글 명조
+     - 버튼, 라벨, 본문: Pretendard - 작은 크기에서도 또렷한 한글 고딕
+     - 명세 지정: 로고와 Hero의 ThRead는 GmarketSansTTFMedium, 메뉴와 강조 문구는 SBAggro */
+  --font-sans: "Pretendard Variable", "Pretendard", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
+    "Malgun Gothic", "Noto Sans KR", "Noto Sans CJK KR", sans-serif;
+  --font-serif: "Hahmlet Variable", "Hahmlet", "Noto Serif KR", "Noto Serif CJK KR", "AppleMyungjo", "Batang", serif;
+  --font-display: var(--font-serif); /* 제목 */
+  --font-display-m: var(--font-sans); /* 카드 제목, 라벨 */
+  --font-ui: var(--font-sans);
+  --font-read: var(--font-serif); /* 쓰레드 발췌, 책 소개 */
+
+  /* 형태: 위계가 높을수록 더 둥글게 */
+  --radius-lg: 28px; /* 떠 있는 큰 카드 */
+  --radius-md: 16px; /* 이미지 타일 */
+  --radius-sm: 12px; /* 버튼 */
+
+  /* 레이아웃 */
+  --card-pad: 40px; /* 큰 카드 안쪽 여백. 로고와 제목을 같은 세로선에 맞추는 기준 */
+}
+
+/* ---------- 기본 ---------- */
+body {
+  margin: 0;
+  font-family: var(--font-ui);
+  color: var(--ink-2);
+  background: var(--paper);
+  line-height: 1.6;
+  word-break: keep-all; /* 한글은 어절 단위로 줄바꿈 */
+  overflow-wrap: break-word;
+}
+p {
+  text-wrap: pretty;
+}
+:focus-visible {
+  outline: 3px solid var(--thread);
+  outline-offset: 3px;
+}
+.skip-link {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 2000;
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.section-inner {
+  width: 80%;
+  margin: 0 auto;
+}
+.page-section {
+  padding-block: clamp(72px, 9vw, 128px);
+}
+.section-head {
+  margin-bottom: 40px;
+}
+.section-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.5rem, 1.15rem + 1vw, 2rem);
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  margin: 0 0 8px;
+  text-wrap: balance;
+}
+.section-desc {
+  margin: 0;
+  color: var(--muted);
+  font-size: 1rem;
+}
+
+/* ---------- 버튼 ---------- */
+/* 주 버튼: 한 화면에 하나만 (토스 One Thing per Page) */
+.btn-thread {
+  --bs-btn-bg: var(--thread-ink);
+  --bs-btn-color: #fff;
+  --bs-btn-border-width: 0;
+  --bs-btn-hover-bg: #c22f37;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-active-bg: #ad2a31;
+  --bs-btn-active-color: #fff;
+  --bs-btn-padding-x: 1.25rem;
+  --bs-btn-padding-y: 0.75rem;
+  --bs-btn-font-weight: 600;
+  --bs-btn-focus-shadow-rgb: 254, 74, 81;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  border-radius: var(--radius-sm);
+}
+.btn-thread.btn-lg {
+  --bs-btn-padding-x: 1.5rem;
+  --bs-btn-padding-y: 0.875rem;
+  --bs-btn-font-size: 1.0625rem;
+  border-radius: 14px;
+}
+/* 보조 버튼: 회색 면 (토스) */
+.btn-quiet {
+  --bs-btn-bg: var(--surface);
+  --bs-btn-color: var(--ink-2);
+  --bs-btn-border-width: 0;
+  --bs-btn-hover-bg: var(--line);
+  --bs-btn-hover-color: var(--ink);
+  --bs-btn-active-bg: #d1d6db;
+  --bs-btn-font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  border-radius: var(--radius-sm);
+}
+
+/* ---------- 읽은 만큼 차오르는 붉은 실 ---------- */
+.read-progress {
+  display: none;
+}
+@supports (animation-timeline: scroll()) {
+  .read-progress {
+    display: block;
+    position: fixed;
+    inset: 0 0 auto 0;
+    height: 3px;
+    z-index: 1040;
+    background: var(--thread);
+    transform-origin: 0 50%;
+    transform: scaleX(0);
+    animation: read-progress linear both;
+    animation-timeline: scroll(root);
+  }
+  @keyframes read-progress {
+    to {
+      transform: scaleX(1);
+    }
+  }
+}
+
+/* =========================================================
+   F301 Navbar
+   ========================================================= */
+.navbar.thread-navbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1030; /* Hero 위에 항상 표시 */
+  background-color: transparent;
+  padding-block: 20px;
+}
+.thread-navbar .nav-inner {
+  /* 로고, Hero 제목, 붉은 실, 섹션 제목이 한 세로선 위에 오도록 */
+  padding-inline: calc(10% + var(--card-pad));
+}
+.logo {
+  font-family: "GmarketSansTTFMedium", sans-serif;
+  font-size: 1.5rem;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+}
+.logo .th {
+  color: #fff;
+}
+.logo .read {
+  color: #fe4a51;
+}
+.thread-navbar .nav-link {
+  font-family: "SBAggro_L", sans-serif;
+  color: #fff;
+  background: none;
+  border: 0;
+  padding-inline: 14px;
+}
+.thread-navbar .nav-link:hover,
+.thread-navbar .nav-link:focus-visible {
+  color: #fe4a51;
+}
+.thread-navbar .navbar-toggler {
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+/* =========================================================
+   책 표지 (Airbnb: 손에 잡히는 책처럼 책등 + 겹친 그림자)
+   ========================================================= */
+.book-cover {
+  position: relative;
+  display: block;
+  width: var(--w, 150px);
+  height: var(--h, 220px);
+  border-radius: 3px 6px 6px 3px;
+  overflow: hidden;
+  background: var(--surface);
+  box-shadow: 0 1px 1px rgba(25, 31, 40, 0.08), 0 6px 12px -2px rgba(25, 31, 40, 0.16),
+    0 18px 28px -12px rgba(25, 31, 40, 0.3);
+  transform-origin: left center;
+  transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.35s;
+}
+.book-cover img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.book-cover::before {
+  /* 책등 */
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 12px;
+  z-index: 1;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.22),
+    rgba(255, 255, 255, 0.2) 45%,
+    rgba(0, 0, 0, 0.08) 75%,
+    transparent
+  );
+}
+.book-cover::after {
+  /* 표지 광택 */
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(115deg, rgba(255, 255, 255, 0.16), transparent 42%);
+  pointer-events: none;
+}
+.book-link {
+  display: block;
+  width: var(--w, 150px);
+  color: inherit;
+  text-decoration: none;
+  border-radius: 6px;
+}
+.book-link:hover .book-cover,
+.book-link:focus-visible .book-cover {
+  /* 책을 펼치듯 기울어짐 */
+  transform: perspective(900px) rotateY(-16deg) translateY(-4px);
+  box-shadow: 0 1px 1px rgba(25, 31, 40, 0.08), 10px 14px 20px -6px rgba(25, 31, 40, 0.24),
+    18px 28px 36px -14px rgba(25, 31, 40, 0.3);
+}
+
+/* =========================================================
+   페이지네이션 (Bootstrap 클래스보다 높은 명시도)
+   ========================================================= */
+.thread-pagination {
+  gap: 4px;
+  margin: 0;
+}
+.thread-pagination .page-item .page-link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px; /* 손가락으로 누르기 충분한 크기 (Fitts's Law) */
+  height: 44px;
+  border: 0; /* 테두리 제거 */
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--ink-2);
+  font-weight: 600;
+  box-shadow: none;
+}
+.thread-pagination .page-item .page-link:hover {
+  background: rgba(25, 31, 40, 0.05);
+}
+.thread-pagination .page-item.active .page-link {
+  color: #fe4a51; /* 활성 페이지 */
+  background: transparent;
+}
+.thread-pagination .page-item.active .page-link::after {
+  /* 붉은 실: 지금 보고 있는 페이지 */
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 6px;
+  width: 16px;
+  height: 2px;
+  margin-left: -8px;
+  border-radius: 2px;
+  background: var(--thread);
+}
+.thread-pagination .page-item.disabled .page-link {
+  color: #b0b8c1;
+}
+
+/* =========================================================
+   Footer
+   ========================================================= */
+.site-footer {
+  background: var(--ink);
+  padding: 40px 0;
+}
+.footer-inner {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px 24px;
+}
+.footer-logo {
+  margin: 0;
+  font-size: 1.25rem;
+}
+.footer-note {
+  margin: 0;
+  color: #b0b8c1;
+  font-size: 0.875rem;
+}
+
+/* =========================================================
+   모바일 하단 탭 바 (토스: 엄지 존)
+   ========================================================= */
+.tabbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1020;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding-bottom: env(safe-area-inset-bottom);
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--line);
+}
+.tabbar-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  height: 60px;
+  color: var(--muted);
+  font-size: 0.6875rem;
+  text-decoration: none;
+}
+.tabbar-item .bi {
+  font-size: 1.3rem;
+  line-height: 1;
+}
+.tabbar-item.is-active {
+  color: var(--ink);
+  font-weight: 700;
+}
+.tabbar-item.is-active::before {
+  /* 붉은 실: 지금 있는 탭 */
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 50%;
+  width: 24px;
+  height: 2px;
+  margin-left: -12px;
+  border-radius: 2px;
+  background: var(--thread);
+}
+
+/* =========================================================
+   F308 로그아웃 확인 Modal
+   ========================================================= */
+.logout-modal .modal-dialog {
+  max-width: 400px;
+}
+.logout-modal .modal-content {
+  border: 0;
+  border-radius: 24px;
+  box-shadow: 0 24px 64px -16px rgba(25, 31, 40, 0.4);
+}
+.logout-modal .modal-header {
+  justify-content: flex-end; /* 오른쪽 위 닫기(X) */
+  border-bottom: 0;
+  padding: 16px 16px 0;
+}
+.logout-modal .modal-body {
+  text-align: center; /* 메시지 중앙 정렬 */
+  padding: 0 24px 24px;
+}
+.logout-modal .modal-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.375rem;
+  color: var(--ink);
+  margin: 0 0 10px;
+}
+.logout-modal .modal-desc {
+  color: var(--muted);
+  margin: 0 0 28px;
+}
+.logout-modal .modal-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.logout-modal .modal-actions .btn {
+  min-height: 52px;
+  border-radius: 14px;
+}
+
+/* ---------- 토스트 ---------- */
+.thread-toast-wrap {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  z-index: 1090;
+  transform: translateX(-50%);
+}
+.thread-toast {
+  width: auto;
+  border: 0;
+  border-radius: 14px;
+  background: var(--ink);
+  color: #fff;
+  box-shadow: 0 12px 32px -8px rgba(25, 31, 40, 0.45);
+}
+.thread-toast .toast-body {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* =========================================================
+   공통 반응형
+   ========================================================= */
+@media (max-width: 991.98px) {
+  :root {
+    --card-pad: 28px;
+  }
+}
+
+@media (max-width: 575.98px) {
+  :root {
+    --card-pad: 16px;
+  }
+  body {
+    padding-bottom: calc(60px + env(safe-area-inset-bottom)); /* 하단 탭 바 자리 */
+  }
+  .section-head {
+    margin-bottom: 28px;
+  }
+  .thread-navbar .nav-inner {
+    padding-inline: 28px;
+  }
+  .thread-navbar .navbar-collapse {
+    margin-top: 12px;
+    padding: 8px 12px;
+    border-radius: var(--radius-md);
+    background: rgba(25, 31, 40, 0.92); /* 메뉴 패널만 어둡게, Navbar 자체는 투명 */
+  }
+  .thread-navbar .nav-link {
+    padding-block: 12px;
+  }
+  .site-footer {
+    padding: 32px 0;
+  }
+
+  /* 토스: 확인 창은 엄지가 닿는 아래쪽에서 올라오는 바텀 시트로 */
+  .logout-modal .modal-dialog {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: 0;
+    max-width: none;
+    min-height: 0;
+  }
+  .logout-modal .modal-content {
+    border-radius: 24px 24px 0 0;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .logout-modal.fade .modal-dialog {
+    transform: translateY(100%);
+  }
+  .logout-modal.show .modal-dialog {
+    transform: none;
+  }
+  .thread-toast-wrap {
+    bottom: calc(76px + env(safe-area-inset-bottom));
+  }
+}
+
+/* 움직임 줄이기를 켠 사용자 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
+    transition-duration: 0.01ms !important;
+  }
+  .read-progress {
+    animation-duration: auto !important;
+  }
+  .book-link:hover .book-cover,
+  .book-link:focus-visible .book-cover {
+    transform: none;
+  }
+}

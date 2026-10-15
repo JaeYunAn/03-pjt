@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ThRead</title>
+    <!--
+      GitHub Pages는 첫 화면으로 index.html을 엽니다.
+      실제 메인 페이지는 06-main.html이므로 바로 이동합니다.
+      (#book-2 같은 상세 화면 주소도 그대로 넘겨 줌)
+    -->
+    <meta http-equiv="refresh" content="0; url=06-main.html" />
+    <script>
+      location.replace("06-main.html" + location.hash);
+    </script>
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: #191f28;
+        color: #fff;
+        font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+        text-align: center;
+      }
+      a {
+        color: #fff;
+        font-weight: 600;
+        text-underline-offset: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p>ThRead 메인 페이지로 이동하고 있어요.</p>
+      <p><a href="06-main.html">메인 페이지 바로 가기</a></p>
+    </main>
+  </body>
+</html>
